@@ -3,12 +3,14 @@
   "hooks": {
     "SessionStart": [
       {
-        "matcher": "startup|resume|clear|compact|fork",
+        "matcher": "^(startup|resume|clear|compact)$",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/session_start.py\"",
-            "timeout": 5
+            "command": "python3 \"${PLUGIN_ROOT}/hooks/session_start.py\"",
+            "timeout": 5,
+            "statusMessage": "Restoring VibeWise learning context",
+            "additionalContextLimit": 5000
           }
         ]
       }

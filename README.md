@@ -1,45 +1,60 @@
-<img src=".claude-plugin/icon.svg" alt="VibeWise brain with code brackets" width="96" height="96">
+<img src="assets/vibewise-icon.png" alt="VibeWise icon" width="96" height="96">
 
-# VibeWise
+# VibeWise for Codex
 
-**You build. AI writes.**
+**You design. Codex writes.**
 
-A Claude Code plugin that puts learning first and keeps you in control while AI writes the code you designed. Claude **asks for your approach first**, helps you examine tradeoffs, and explains unfamiliar concepts. You shape the design and decide when it's ready to implement. Claude writes the code, then explains what it changed and why.
+An unofficial Codex adaptation of [VibeWise by Noah Kim](https://github.com/nykooi1/vibe-wise),
+based on upstream 0.1.43. Codex asks for your approach first, helps you examine
+tradeoffs, and explains unfamiliar concepts. You shape the design and decide when
+it's ready to implement; Codex writes the agreed code and explains the result.
 
-For anyone who wants to learn as they build—whether you're an aspiring engineer, a junior developer, or an experienced engineer exploring an unfamiliar stack. Practice planning how the pieces fit together, anticipating failures, and checking the result while keeping ownership of the decisions.
+For developers who want to learn while building, from a first project to an
+unfamiliar stack. The three Markdown state files remain compatible with upstream.
 
 ## Get started
 
-You need [Claude Code](https://code.claude.com/docs/en/setup) and
-[Python 3](https://www.python.org/downloads/). VibeWise uses Python to restore
-learning context and reset learning notes. No extra Python packages are needed.
+The initial target is **Codex CLI on macOS or Linux**, with Python 3.10+ available
+as `python3`. No extra Python packages, account, backend, or MCP server are needed.
+Use a current Codex build that supports portable plugins and SessionStart hooks.
 
-VibeWise has been approved for Anthropic's Claude directory, but isn't listed in
-the public community marketplace yet. I expect it to appear soon. In the meantime,
-install it in Claude Code through my GitHub marketplace:
+In your terminal, add this repository's marketplace:
 
-Run these commands **one at a time** in Claude Code. First, add the marketplace:
-
-```text
-/plugin marketplace add nykooi1/vibe-wise
+```sh
+codex plugin marketplace add DEStonebreaker/vibe-wise-codex
 ```
 
-After it finishes, install the plugin:
+For a local checkout instead:
 
-```text
-/plugin install vibe-wise@vibe-wise
+```sh
+codex plugin marketplace add /absolute/path/to/vibe-wise-codex
 ```
 
-**Enable automatic updates:** open `/plugin` → **Marketplaces** → **vibe-wise** →
-**Enable auto-update**. This is off by default for third-party marketplaces.
+Then:
 
-Restart Claude Code in the project you want to work on, then run:
+1. Start Codex and open `/plugins`.
+2. Select the **VibeWise for Codex** marketplace, install **vibe-wise-codex**, and enable it.
+3. Start a new session in the project you want to learn in.
+4. Open `/hooks`, review the VibeWise SessionStart command, and trust the current definition.
+5. Invoke the learning skill:
 
 ```text
-/vibe-wise:learn
+$vibe-wise
 ```
 
-Setup asks one question at a time. Use the arrow keys and Enter for choices; pick **Use defaults** to skip preference setup. Then ask Claude to build something. Starting fresh or joining an unfamiliar repository both work. For an existing repository, Claude first inspects the code and sketches a small system map.
+Installing a plugin does not automatically trust its hooks. Without hook trust,
+explicit invocation can work while automatic restoration does not. Review hooks
+again when their definition changes. If your client lacks these commands, update
+Codex before attempting the plugin flow.
+
+Setup asks one question at a time; choose **Use defaults** to skip preference
+customization. Choice pickers are used when available and permitted, with ordinary
+chat as the fallback. Reasoning questions and required confirmations stay in chat
+on surfaces with optional-only pickers. No reply never counts as approval.
+
+An existing repository is inspected to create a small project map. Nothing activates
+in other projects just because you installed the plugin. Ask for a feature after
+setup, or include the task alongside `$vibe-wise`.
 
 ## What it feels like
 
@@ -47,7 +62,7 @@ You're building a Notion-style notes app: users sign in, create and edit private
 notes, and organize them into folders. Here, you're working through how notes and
 folders relate—and what should happen when someone deletes a folder.
 
-This condensed example is adapted from a real learning session. Later implementation
+This condensed example adapts an upstream Claude learning session for Codex. Later implementation
 steps are illustrative; intervening design discussions are omitted.
 
 **You:**
@@ -56,7 +71,7 @@ steps are illustrative; intervening design discussions are omitted.
 A note can be in several folders. Deleting a folder should delete its notes.
 ```
 
-**Claude:**
+**Codex:**
 
 ```text
 ✦ Build checkpoint: Deleting a shared note
@@ -72,7 +87,7 @@ When someone deletes Travel, what should happen to that note in Summer?
 Keep it in Summer. If it has no folders left, keep the note outside any folder.
 ```
 
-**Claude:**
+**Codex:**
 
 ```text
 That separates deleting a folder from deleting a note.
@@ -89,7 +104,7 @@ A links table with note_id and folder_id. Deleting a folder removes its links,
 not the notes.
 ```
 
-**Claude:**
+**Codex:**
 
 ```text
 Each link records one membership. Several links can point to the same note;
@@ -120,7 +135,7 @@ Confirm and continue.
 
 *Later, after the remaining choices for this step are worked through...*
 
-**Claude:**
+**Codex:**
 
 ```text
 ✦ Implementation checkpoint: Folder membership
@@ -141,9 +156,9 @@ This step builds storage behavior; the UI comes later.
 Implement this step.
 ```
 
-*Claude writes the code and runs the tests.*
+*Codex writes the code and runs the tests.*
 
-**Claude:**
+**Codex:**
 
 ```text
 ✦ Implementation report: Folder membership
@@ -153,27 +168,27 @@ Implement this step.
 - Added and ran tests for shared notes and notes left without a folder; both passed.
 ```
 
-You don't need to know the answer already. Claude can explain unfamiliar concepts, sketch the relevant pieces, and help you tackle a smaller question. You stay involved in forming the plan. Answer in plain English; ask for more help or say “skip” whenever you want.
+You don't need to know the answer already. Codex can explain unfamiliar concepts, sketch the relevant pieces, and help you tackle a smaller question. You stay involved in forming the plan. Answer in plain English; ask for more help or say “skip” whenever you want.
 
 Describing what you want sets the requirements. Build Checkpoints ask you to work
 out how it should function; a feature preference doesn't approve an architecture.
 
 | Checkpoint | What happens |
 | --- | --- |
-| **Build** | You reason through how to approach the problem with Claude. |
+| **Build** | You reason through how to approach the problem with Codex. |
 | **Design** | Review the design. **Confirm and continue** records it and continues planning; no code yet. |
-| **Implementation** | Review the specific code changes. **Implement this step** authorizes Claude to make them. |
+| **Implementation** | Review the specific code changes. **Implement this step** authorizes Codex to make them. |
 
 These aren't three mandatory stops. When ready to code, the Implementation
 checkpoint also confirms the design, skipping a separate Design checkpoint.
 Both confirmations offer **Discuss** to ask questions, clarify anything confusing,
 or explore alternatives before deciding.
 
-When Claude proposes additional implementation details, it separates them from your
+When Codex proposes additional implementation details, it separates them from your
 decisions in a short list or table explaining each addition and why it matters.
 You can question or change any item before proceeding.
 
-After implementation, Claude briefly explains what changed, how the key code works,
+After implementation, Codex briefly explains what changed, how the key code works,
 why it fits your decision, any tests it added or updated and what they cover, and
 which checks ran with their results. Ask to dig deeper anywhere it's unclear.
 
@@ -189,42 +204,65 @@ Experience changes the support you get, not your ownership of decisions:
 | Intermediate | Less introductory context; explore interactions and tradeoffs. |
 | Advanced | Probe difficult constraints, failure modes, and design assumptions. |
 
-Everyone reasons first. Claude adapts to what you demonstrate and how familiar you
+Everyone reasons first. Codex adapts to what you demonstrate and how familiar you
 are with the stack. Checkpoint frequency—Light, Normal, or Frequent—is separate.
 
 - “Use fewer checkpoints.”
 - “Focus on backend architecture.”
 - “Use multiple-choice questions.”
 - “Just implement this one.”
-- “Pause learning.” Resume with `/vibe-wise:learn`.
+- “Pause learning.” Resume with `$vibe-wise`.
 
 Preferences, learning notes, and a project map live in `.vibe-wise/` in your project. Learning mode resumes in future sessions and after compaction. Add `.vibe-wise/` to your `.gitignore` to keep your notes out of Git; the plugin won't change it silently.
 
-No extra account, backend, or telemetry. Saved notes are included in Claude's context, so your normal Claude Code data settings still apply.
+No extra account, backend, or telemetry. Saved notes are included in Codex's context, so your normal Codex data settings still apply.
 
-To start learning this project from scratch, run `/vibe-wise:reset`. It shows the
+To start learning this project from scratch, run `$vibe-wise-reset`. It shows the
 project and asks **Cancel / Reset learning**. After confirmation, it backs up your
 profile, progress, and project map inside the notes directory's `backups/` folder,
 then restarts onboarding. Source code and other projects stay untouched. To change
-your experience level or preferences, just tell Claude; no reset is needed.
+your experience level or preferences, just tell Codex; no reset is needed.
 
 ## Updating
 
-For automatic updates, open `/plugin` → **Marketplaces** → **vibe-wise** →
-**Enable auto-update**. Auto-update is off by default for third-party marketplaces.
-Claude Code notifies you after an update; restart Claude Code to load the new version.
-
-To update manually, run these in your terminal:
+Refresh this marketplace from your terminal:
 
 ```sh
-claude plugin marketplace update vibe-wise
-claude plugin update vibe-wise@vibe-wise
+codex plugin marketplace upgrade vibe-wise-codex
 ```
 
-Then restart Claude Code. Your project learning notes stay intact; no reset is needed.
-Run `claude plugin list` to check the installed version.
-[More about plugin updates](https://code.claude.com/docs/en/discover-plugins#keep-plugins-updated).
+Use `/plugins` to refresh/reinstall the installed plugin if needed, then start a new
+session and verify the current files are loaded. Review any changed hook definition
+in `/hooks`. Updating does not reset project notes.
+
+## Compatibility and limits
+
+This is an initial Codex port, version 0.1.0. The automated suite covers packaging,
+the hook command, and state/reset behavior; live Codex installation and conversation
+smoke tests must still be completed before a release. See
+[development and smoke tests](docs/development.md).
+
+- Codex CLI on macOS/Linux is the primary target.
+- Other local Codex clients may load the skills, but have not been smoke-tested.
+- The Codex IDE extension does not provide plugin installation.
+- Ordinary ChatGPT chats and Claude Code are not supported by this fork.
+- Windows is not yet verified; hook execution currently expects `python3`.
+- Checkpoints are instructions to the agent, not a hard tool gate.
+
+The SessionStart hook only reads activation state and returns file-reading
+instructions. It does not modify notes, parse transcripts, or perform network calls.
+The agent maintains the three state files during meaningful learning events.
+A paused profile stays paused across restart and compaction. Legacy
+`.sensible-vibes/` directories are reused in place; no migration is performed.
+
+Official contracts:
+[plugins and marketplaces](https://developers.openai.com/plugins/build/plugins),
+[Codex hooks](https://developers.openai.com/codex/hooks),
+[skills](https://developers.openai.com/codex/skills), and
+[plugin surfaces](https://developers.openai.com/codex/plugins).
 
 ## License
+
+Based on VibeWise by Noah Kim. The original copyright and MIT license are retained.
 
 [MIT](LICENSE). You can use, modify, and share this software, including commercially. Keep the license notice with copies. The software comes without a warranty.

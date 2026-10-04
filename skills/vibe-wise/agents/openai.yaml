@@ -1,0 +1,7 @@
+interface:
+  display_name: "VibeWise"
+  short_description: "Learn while designing software with Codex."
+  default_prompt: "Use $vibe-wise to guide my design while Codex implements the agreed steps."
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Reset VibeWise"
+  short_description: "Back up learning notes and restart onboarding."
+  default_prompt: "Use $vibe-wise-reset to preview a reset of this project’s learning notes."
+
+policy:
+  allow_implicit_invocation: false
