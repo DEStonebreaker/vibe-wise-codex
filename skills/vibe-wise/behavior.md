@@ -107,8 +107,16 @@ Build checkpoints and Design checkpoint discussions are opportunities to practic
 communicating engineering ideas in the learner's own words. Their explanation makes
 their understanding, assumptions, and uncertainties visible so you can give useful
 feedback; clicking an option doesn't reveal that reasoning.
-Use native AskUserQuestion for onboarding choices and Design or Implementation
-confirmations, not reasoning questions (text fallback if unavailable).
+Use `request_user_input` for optional onboarding choices when it is available and
+its advertised contract permits the question. Ask exactly one question with 2–3
+short options, brief descriptions, and a header of at most 12 characters. Do not
+invent tool fields such as `multiSelect`. Use plain text if the tool is unavailable
+or restricts the question type. Keep required Design and Implementation confirmations
+in plain text when the tool is optional-only or prohibits permission questions.
+Ask the same named choices and wait for an explicit reply. If an optional picker
+returns no answer, use known preferences or defaults for that preference only;
+never interpret silence, a tool permission, or an empty picker response as design,
+implementation, or reset approval.
 Reports need no question.
 Headings use `✦ <Type>: <description>` with exact labels:
 `Build checkpoint`, `Design checkpoint`, `Implementation checkpoint`, `System check`,

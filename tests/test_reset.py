@@ -2,7 +2,9 @@
 
 import importlib.util
 import json
+import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -11,7 +13,7 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills/reset/reset.py"
+SCRIPT = ROOT / "skills/vibe-wise-reset/reset.py"
 spec = importlib.util.spec_from_file_location("vibe_wise_reset", SCRIPT)
 reset_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(reset_module)
@@ -106,6 +108,25 @@ class ResetTests(unittest.TestCase):
         self.assertEqual(result["state"], str(state))
         self.assert_originals(Path(result["backup"]), originals)
         self.assertFalse((self.project / ".vibe-wise").exists())
+
+    def test_installed_helper_with_spaces_needs_no_hook_environment(self):
+        state, originals = self.notes()
+        installed = self.root / "plugin cache with spaces" / "vibe-wise-codex"
+        shutil.copytree(ROOT / "hooks", installed / "hooks")
+        shutil.copytree(SCRIPT.parent, installed / "skills/vibe-wise-reset")
+        helper = installed / "skills/vibe-wise-reset/reset.py"
+        command = [sys.executable, "-B", str(helper), "--cwd", str(self.project)]
+        preview = subprocess.run(command, cwd=self.project, env={"PATH": os.defpath},
+                                 capture_output=True, text=True, check=True)
+        token = json.loads(preview.stdout)["confirmation"]
+        self.assert_originals(state, originals)
+        result = subprocess.run(command + ["--confirm", token], cwd=self.project,
+                                env={"PATH": os.defpath}, capture_output=True,
+                                text=True, check=True)
+        output = json.loads(result.stdout)
+        self.assertEqual(output["status"], "reset")
+        self.assert_originals(Path(output["backup"]), originals)
+        self.assertIn("Onboarding reset: pending", (state / "profile.md").read_text())
 
     def test_preferred_state_resets_without_touching_legacy(self):
         state, _ = self.notes()

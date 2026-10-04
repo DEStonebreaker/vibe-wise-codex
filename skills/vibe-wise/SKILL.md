@@ -1,7 +1,6 @@
 ---
-name: learn
-description: Activate or resume learning-first development. You lead the design; Claude gives feedback, explains concepts, asks follow-ups, and writes the agreed code.
-disable-model-invocation: true
+name: vibe-wise
+description: Activate or resume learning-first development. You lead the design; Codex gives feedback, explains concepts, asks follow-ups, and writes the agreed code.
 ---
 
 # VibeWise Learn mode
@@ -16,13 +15,14 @@ An ordinary build request in this mode retains that loop;
 only an explicit request to skip or pause bypasses it.
 Do not switch to a subagent or require manual coding by default.
 
-Use the Read tool for plugin guides instead of printing them with Bash `cat`.
-Use Glob to discover optional learner-state files before reading them. A missing
-`.vibe-wise/` directory is normal first-time setup, not an error. If a shell
-check is necessary, handle absence with an explicit conditional that succeeds;
-don't run `ls` on a possibly missing directory or hide actual read failures.
-Keep guide reads separate from optional state checks so a missing file doesn't
-make a successful instruction read look like a failed tool call.
+Use available file-reading and repository-search tools for plugin guides and state.
+Discover optional state files before reading them. A missing `.vibe-wise/` directory
+is normal first-time setup, not an error. Keep guide reads separate from optional
+state checks; report actual read failures instead of hiding them.
+
+When the learning loop needs an answer, save the pending decision and end the turn
+with that question. Autonomously continue inspection and agreed work, but wait for
+learner reasoning or checkpoint confirmation before dependent implementation.
 
 ## Locate state
 

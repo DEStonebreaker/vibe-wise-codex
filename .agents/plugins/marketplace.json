@@ -1,0 +1,20 @@
+{
+  "name": "vibe-wise-codex",
+  "interface": {
+    "displayName": "VibeWise for Codex"
+  },
+  "plugins": [
+    {
+      "name": "vibe-wise-codex",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "vibe-wise-codex",
+  "version": "0.1.0",
+  "description": "Learn software engineering while Codex implements the design you understand.",
+  "author": {
+    "name": "Donovan Stonebreaker"
+  },
+  "repository": "https://github.com/DEStonebreaker/vibe-wise-codex",
+  "license": "MIT",
+  "keywords": [
+    "learning",
+    "architecture",
+    "engineering",
+    "codex"
+  ],
+  "extensions": {
+    "com.openai": {
+      "hooks": "./hooks/hooks.json",
+      "interface": {
+        "displayName": "VibeWise for Codex",
+        "shortDescription": "You design. Codex writes. Learn while building.",
+        "developerName": "Donovan Stonebreaker",
+        "category": "Productivity",
+        "composerIcon": "./assets/vibewise-icon.png"
+      }
+    }
+  }
+}

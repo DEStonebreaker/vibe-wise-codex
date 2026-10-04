@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -55,7 +56,7 @@ class SessionStartTests(unittest.TestCase):
             # developer's credentials or unrelated environment configuration.
             env={
                 "PATH": os.pathsep.join((str(Path(sys.executable).parent), os.defpath)),
-                "CLAUDE_PLUGIN_ROOT": str(ROOT),
+                "PLUGIN_ROOT": str(ROOT),
             }, cwd=self.root,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -73,11 +74,11 @@ class SessionStartTests(unittest.TestCase):
 
     def test_restore_all_registered_session_lifecycles(self):
         self.state()
-        for source in ("startup", "resume", "clear", "compact", "fork"):
+        for source in ("startup", "resume", "clear", "compact"):
             with self.subTest(source=source):
                 self.assertTrue(re.fullmatch(REGISTRATION["matcher"], source))
                 context = self.context(source=source)
-                self.assertIn(str(ROOT / "skills/learn/SKILL.md"), context)
+                self.assertIn(str(ROOT / "skills/vibe-wise/SKILL.md"), context)
                 self.assertIn(str(self.project / ".vibe-wise"), context)
                 self.assertIn("Read profile.md and project-map.md", context)
                 self.assertIn("Search the entire progress.md", context)
@@ -238,6 +239,40 @@ class SessionStartTests(unittest.TestCase):
         self.run_hook(source="compact")
         after = {p.name: p.read_bytes() for p in state.iterdir()}
         self.assertEqual(before, after)
+
+    def test_installed_copy_with_spaces_uses_plugin_root_and_codex_payload(self):
+        state = self.state()
+        installed = self.root / "plugin cache with spaces" / "vibe-wise-codex"
+        shutil.copytree(ROOT / "hooks", installed / "hooks")
+        shutil.copytree(ROOT / "skills", installed / "skills")
+        result = subprocess.run(
+            REGISTRATION["hooks"][0]["command"], shell=True,
+            input=json.dumps({
+                "session_id": "codex-test-session",
+                "transcript_path": str(self.root / "transcript-that-does-not-exist.jsonl"),
+                "cwd": str(self.project), "hook_event_name": "SessionStart",
+                "model": "test-model", "permission_mode": "default", "source": "compact",
+            }), text=True, capture_output=True, timeout=5,
+            env={"PATH": os.pathsep.join((str(Path(sys.executable).parent), os.defpath)),
+                 "PLUGIN_ROOT": str(installed)}, cwd=self.project,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, "")
+        context = json.loads(result.stdout)["hookSpecificOutput"]["additionalContext"]
+        self.assertIn(str(installed / "skills/vibe-wise/SKILL.md"), context)
+        self.assertIn(str(state), context)
+        self.assertNotIn(str(ROOT), context)
+        self.assertLess(len(context), REGISTRATION["hooks"][0]["additionalContextLimit"])
+
+    def test_other_events_and_oversized_invalid_payload_are_quiet(self):
+        self.state()
+        for raw in (
+            json.dumps({"hook_event_name": "PostCompact", "cwd": str(self.project)}),
+            json.dumps({"hook_event_name": "SessionStart", "cwd": str(self.project),
+                        "extra": "x" * 65536}),
+        ):
+            with self.subTest(size=len(raw)):
+                self.assertIsNone(self.run_hook(raw=raw))
 
     def test_compaction_points_to_pending_decision_without_inventing_approval(self):
         state = self.state()
